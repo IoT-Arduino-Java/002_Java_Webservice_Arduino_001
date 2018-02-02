@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Observable;
 import java.util.Observer;
+import javax.swing.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +24,9 @@ import org.json.JSONObject;
  * the UART and sends it to the web service.11
  ****************************************************/
 public class ExampleRESTServiceClient implements Observer{
-	
+
+private static JTextField TextField1;
+
 	/****************************************************
 	 * Name: Main function
 	 ****************************************************/
@@ -31,6 +34,11 @@ public class ExampleRESTServiceClient implements Observer{
 		String string = "";
 		try {
  
+	    	javax.swing.SwingUtilities.invokeLater(new Runnable() {
+	            public void run() {
+	              SwingGUIRun();
+	            }
+	         });
 			// Step1: Let's 1st read file from fileSystem
 			// Change CrunchifyJSON.txt path here
 			InputStream crunchifyInputStream = new FileInputStream("C:/CrunchifyJSON.txt");
@@ -99,6 +107,11 @@ public class ExampleRESTServiceClient implements Observer{
             
             if(str.contains("Temperature"))
             {
+    	    	javax.swing.SwingUtilities.invokeLater(new Runnable() {
+    	            public void run() {
+    	            	TextField1.setText(str.substring(12));;
+    	            }
+    	         });
             	JSONObject jsonObject;
 
             	try {
@@ -139,4 +152,30 @@ public class ExampleRESTServiceClient implements Observer{
         }
     }
     
+    /****************************************************
+	 * Name: SwingGUIRun
+	 * Description: Swing GUI for temperature display
+	 * 
+	 ****************************************************/
+    private static void SwingGUIRun() {
+    	
+        JFrame f= new JFrame("Arduino Temperature");
+        
+        JLabel Label1;
+        Label1=new JLabel("Temperature:");  
+        Label1.setBounds(50,10, 100,20);   
+        f.add(Label1);
+
+  
+        TextField1=new JTextField("No temp yet...");
+        TextField1.setEditable(false);
+        TextField1.setBounds(50,30, 100,20);  
+        f.add(TextField1);  
+        
+        f.setSize(300,100);
+        f.setLayout(null);  
+        f.setVisible(true);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    }    
 }
