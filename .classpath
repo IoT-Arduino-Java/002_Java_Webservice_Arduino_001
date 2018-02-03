@@ -22,11 +22,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/001_Apps/comm-2.0.jar"/>
-	<classpathentry kind="lib" path="D:/001_Apps/RXTXcomm.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Windows/SysWOW64"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="D:/001_Apps/JavaLibs/comm-2.0.jar"/>
+	<classpathentry kind="lib" path="D:/001_Apps/JavaLibs/RXTXcomm.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

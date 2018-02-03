@@ -9,9 +9,10 @@ import java.util.Enumeration;
 import java.util.Observable;
 
 /****************************************************
- * Name: SerialComInterface
+ * Name: SerialComInterface class
  ****************************************************/
 public class SerialComInterface extends Observable implements SerialPortEventListener {
+	
 	SerialPort serialPort;
        /** The port we're normally going to use. */
 	private static final String PORT_NAMES[] = { 
@@ -33,6 +34,7 @@ public class SerialComInterface extends Observable implements SerialPortEventLis
 	/** Default bits per second for COM port. */
 	private static final int DATA_RATE = 9600;
 
+	
 	/****************************************************
 	 * Name: initialize
 	 ****************************************************/
@@ -45,6 +47,7 @@ public class SerialComInterface extends Observable implements SerialPortEventLis
 		Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
 
 		this.addObserver(new ExampleRESTServiceClient());
+		
 		//First, Find an instance of serial port as set in PORT_NAMES.
 		while (portEnum.hasMoreElements()) {
 			CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
@@ -55,12 +58,14 @@ public class SerialComInterface extends Observable implements SerialPortEventLis
 				}
 			}
 		}
+		
 		if (portId == null) {
 			System.out.println("Could not find COM port.");
 			return;
 		}
 
 		try {
+			
 			// open serial port, and use class name for the appName.
 			serialPort = (SerialPort) portId.open(this.getClass().getName(),
 					TIME_OUT);
@@ -78,11 +83,13 @@ public class SerialComInterface extends Observable implements SerialPortEventLis
 			// add event listeners
 			serialPort.addEventListener(this);
 			serialPort.notifyOnDataAvailable(true);
+			
 		} catch (Exception e) {
 			System.err.println(e.toString());
 		}
 	}
 
+	
 	/****************************************************
 	 * Name: ExampleRESTService
 	 * Description: 
@@ -90,12 +97,14 @@ public class SerialComInterface extends Observable implements SerialPortEventLis
 	 * This will prevent port locking on platforms like Linux.
 	 ****************************************************/
 	public synchronized void close() {
+		
 		if (serialPort != null) {
 			serialPort.removeEventListener();
 			serialPort.close();
 		}
 	}
 
+	
 	/****************************************************
 	 * Name: serialEvent
 	 * Description: 
@@ -103,6 +112,7 @@ public class SerialComInterface extends Observable implements SerialPortEventLis
 	 ****************************************************/
 	public synchronized void serialEvent(SerialPortEvent oEvent) {
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+			
 			try {
 				String inputLine=input.readLine();
 				//System.out.println(inputLine);

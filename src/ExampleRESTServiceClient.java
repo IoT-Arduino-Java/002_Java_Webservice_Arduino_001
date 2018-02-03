@@ -25,26 +25,31 @@ import org.json.JSONObject;
  ****************************************************/
 public class ExampleRESTServiceClient implements Observer{
 
-private static JTextField TextField1;
+private static JTextField temperatureTextField;
 
 	/****************************************************
 	 * Name: Main function
 	 ****************************************************/
 	public static void main(String[] args) {
+		
 		String string = "";
+		
 		try {
- 
+            // Start temperature GUI in EDT Task
 	    	javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
-	              SwingGUIRun();
+	              temperatureGUIrun();
 	            }
 	         });
+	    	
 			// Step1: Let's 1st read file from fileSystem
 			// Change CrunchifyJSON.txt path here
 			InputStream crunchifyInputStream = new FileInputStream("C:/CrunchifyJSON.txt");
 			InputStreamReader crunchifyReader = new InputStreamReader(crunchifyInputStream);
 			BufferedReader br = new BufferedReader(crunchifyReader);
+			
 			String line;
+			
 			while ((line = br.readLine()) != null) {
 				string += line + "\n";
 			}
@@ -54,12 +59,15 @@ private static JTextField TextField1;
  
 			// Step2: Now pass JSON File Data to REST Service
 			try {
+				
 				URL url = new URL("http://localhost:8080/WebServiceExample/api/WebService");
 				URLConnection connection = url.openConnection();
+				
 				connection.setDoOutput(true);
 				connection.setRequestProperty("Content-Type", "application/json");
 				connection.setConnectTimeout(5000);
 				connection.setReadTimeout(5000);
+				
 				OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
 				out.write(jsonObject.toString());
 				out.close();
@@ -70,15 +78,21 @@ private static JTextField TextField1;
 				}
 				System.out.println("\nCrunchify REST Service Invoked Successfully..");
 				in.close();
+				
 			} catch (Exception e) {
+				
 				System.out.println("\nError while calling Crunchify REST Service");
 				System.out.println(e);
 			}
  
 			br.close();
 			
+			// Start reading from UART port
 			SerialComInterface main = new SerialComInterface();
+			
 			main.initialize();
+			
+			// Dummy thread to keep application alive
 			Thread t=new Thread() {
 				public void run() {
 					//the following line will keep this app alive for 1000 seconds,
@@ -87,7 +101,9 @@ private static JTextField TextField1;
 				}
 			};
 			t.start();
+			
 			System.out.println("Started");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -100,18 +116,25 @@ private static JTextField TextField1;
 	 ****************************************************/
     @Override
     public void update(Observable o, Object arg) {
-        if(o instanceof SerialComInterface){
-        	SerialComInterface observable = (SerialComInterface) o;
+        
+    	if(o instanceof SerialComInterface){
+        
+    		SerialComInterface observable = (SerialComInterface) o;
         	String str = (String) arg;
             System.out.println("update() :" + str);
             
-            if(str.contains("Temperature"))
-            {
+            // Check for temperature
+            if(str.contains("Temperature")){
+            	
+            	//Update the temperature text field in the EDT task
     	    	javax.swing.SwingUtilities.invokeLater(new Runnable() {
     	            public void run() {
-    	            	TextField1.setText(str.substring(12));;
+    	            	temperatureTextField.setText(str.substring(12));;
     	            }
     	         });
+    	    	
+    	    	
+    	    	// Send temperature as JSON to the REST web service
             	JSONObject jsonObject;
 
             	try {
@@ -121,15 +144,16 @@ private static JTextField TextField1;
 					System.out.println(jsonObject);
 		
 	            	// Step2: Now pass JSON File Data to REST Service
-			
 	            	try {
                         // Create connection
 						URL url = new URL("http://localhost:8080/WebServiceExample/api/WebService");
 						URLConnection connection = url.openConnection();
+
 						connection.setDoOutput(true);
 						connection.setRequestProperty("Content-Type", "application/json");
 						connection.setConnectTimeout(5000);
 						connection.setReadTimeout(5000);
+
 						OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
 						out.write(jsonObject.toString());
 						out.close();
@@ -153,29 +177,29 @@ private static JTextField TextField1;
     }
     
     /****************************************************
-	 * Name: SwingGUIRun
+	 * Name: temperatureGUIrun 
 	 * Description: Swing GUI for temperature display
 	 * 
 	 ****************************************************/
-    private static void SwingGUIRun() {
+    private static void temperatureGUIrun() {
     	
-        JFrame f= new JFrame("Arduino Temperature");
+        JFrame temepratureFrame = new JFrame("Arduino Temperature");
         
-        JLabel Label1;
-        Label1=new JLabel("Temperature:");  
-        Label1.setBounds(50,10, 100,20);   
-        f.add(Label1);
+        JLabel temperatureLabel;
+        temperatureLabel = new JLabel("Temperature:");  
+        temperatureLabel.setBounds(50,10, 100,20);   
+        temepratureFrame.add(temperatureLabel);
 
   
-        TextField1=new JTextField("No temp yet...");
-        TextField1.setEditable(false);
-        TextField1.setBounds(50,30, 100,20);  
-        f.add(TextField1);  
+        temperatureTextField = new JTextField("No temp yet...");
+        temperatureTextField.setEditable(false);
+        temperatureTextField.setBounds(50,30, 100,20);  
+        temepratureFrame.add(temperatureTextField);  
         
-        f.setSize(300,100);
-        f.setLayout(null);  
-        f.setVisible(true);
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        temepratureFrame.setSize(300,100);
+        temepratureFrame.setLayout(null);  
+        temepratureFrame.setVisible(true);
+        temepratureFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     }    
 }
